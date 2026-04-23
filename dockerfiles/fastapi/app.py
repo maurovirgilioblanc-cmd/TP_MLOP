@@ -7,7 +7,6 @@ from schemas import PacienteInput, PredictionOutput
 
 app = FastAPI(title="Stroke Prediction API")
 
-
 @app.on_event("startup")
 def startup():
     load_model()
