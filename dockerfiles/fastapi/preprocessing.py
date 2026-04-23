@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 
-
 def apply_feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
     """Replica las transformaciones del pipeline de entrenamiento."""
     df = df.copy()
