@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>Predicción de ACV</h1>
+<h1>🧠 Predicción de ACV</h1>
 
 <p>
 TP Final de la materia MLOps — Posgrado en Inteligencia Artificial (CEIA, UBA)
@@ -12,7 +12,7 @@ Pipeline end-to-end para predecir la probabilidad de accidente cerebrovascular (
 
 <br>
 
-<h2>Integrantes</h2>
+<h2>👥 Integrantes</h2>
 
 <p>
 Mauro Virgilio Blanc<br>
@@ -24,7 +24,7 @@ Andrea Viviana Ferenaz
 
 <br>
 
-<h2>Arquitectura</h2>
+<h2>🏗️ Arquitectura</h2>
 
 <pre>
 MinIO (s3)   <- dataset de entrada (bucket: data)
@@ -42,7 +42,7 @@ Servicios de soporte: PostgreSQL (backend de Airflow y MLflow), Redis (broker de
 
 <br>
 
-<h2>Stack tecnológico</h2>
+<h2>🧰 Stack tecnológico</h2>
 
 <table align="center">
 <tr>
@@ -61,7 +61,7 @@ Servicios de soporte: PostgreSQL (backend de Airflow y MLflow), Redis (broker de
 
 <br>
 
-<h2>Requisitos previos</h2>
+<h2>⚙️ Requisitos previos</h2>
 
 <p>
 Docker &gt;= 24<br>
@@ -75,7 +75,7 @@ echo "AIRFLOW_UID=$(id -u)" >> .env
 
 <br>
 
-<h2>Despliegue paso a paso</h2>
+<h2>🚀 Despliegue paso a paso</h2>
 
 <p><b>1. Clonar el repositorio</b></p>
 
@@ -91,11 +91,14 @@ docker compose --profile all up --build -d
 </pre>
 
 <p>
-Esto levanta todos los servicios. Esperar 2-3 minutos.
+Esto levanta todos los servicios: Airflow, MLflow, MinIO, FastAPI y PostgreSQL. Esperar a que los healthchecks pasen (puede tardar 2-3 minutos).
 </p>
 
 <p><b>3. Cargar dataset en MinIO</b></p>
 
+<p>
+Este paso es obligatorio antes de ejecutar el DAG. El pipeline lee stroke-data.csv desde el bucket data de MinIO.
+</p>
 <pre>
 docker cp data/stroke-data.csv minio:/tmp/stroke-data.csv
 docker exec minio mc alias set local http://localhost:9000 minio minio123
@@ -103,34 +106,34 @@ docker exec minio mc cp /tmp/stroke-data.csv local/data/stroke-data.csv
 </pre>
 
 <p>
-Alternativa: http://localhost:9001 (minio / minio123)
+Alternativamente, usar la UI de MinIO en http://localhost:9001 (usuario: minio, contrasena: minio123), ingresar al bucket data y subir el archivo data/stroke-data.csv.
 </p>
 
-<p><b>4. Ejecutar DAG</b></p>
+<p><b>4. Ejecutar DAG de entrenamiento</b></p>
 
 <p>
-http://localhost:8080<br>
-Usuario: airflow<br>
-Password: airflow
+1. Abrir Airflow en http://localhost:8080 (usuario: airflow, contraseña: airflow)<br>
+2. Activar y ejecutar el DAG <b>train_stroke_model</b><br>
+3. Esperar a que todas las tareas terminen en estado <b>success</b>
 </p>
 
 <p>
-Activar train_stroke_model y ejecutar hasta success
+El modelo quedará registrado en MLflow como <b>stroke-predictor</b>.
 </p>
 
 <p><b>5. Reiniciar API</b></p>
-
+<p>La API carga el modelo al iniciar. Si fue levantada antes de que el DAG terminara, reiniciarla para que tome el modelo recien registrado:</p>
 <pre>
 docker compose restart fastapi
 </pre>
 
 <p>
-Solo necesario la primera vez
+En ejecuciones posteriores (el modelo ya existe en MLflow) este paso no es necesario.
 </p>
 
 <br>
 
-<h2>Servicios y URLs</h2>
+<h2>🌐 Servicios y URLs</h2>
 
 <table align="center">
 <tr>
@@ -148,12 +151,14 @@ Solo necesario la primera vez
 
 <br>
 
-<h2>Uso de la API</h2>
+<h2>🔎 Uso de la API</h2>
 
+<p><b>Verificar estado</b></p>
 <pre>
 curl http://localhost:8800/
 </pre>
 
+<p><b>Predecir riesgo de ACV</b></p>
 <pre>
 curl -X POST http://localhost:8800/predict \
 -H "Content-Type: application/json" \
@@ -186,18 +191,18 @@ curl -X POST http://localhost:8800/predict \
 
 <br>
 
-<h2>Valores válidos</h2>
+<h2>📌 Valores válidos</h2>
 
-<p>
-gender: Male, Female, Other<br>
-work_type: Private, Self-employed, Govt_job, children, Never_worked<br>
-Residence_type: Urban, Rural<br>
-smoking_status: formerly smoked, never smoked, smokes, Unknown
-</p>
+<ul align="left" style="display: inline-block; text-align: left;">
+  <li><b>gender:</b> "Male", "Female", "Other"</li>
+  <li><b>work_type:</b> "Private", "Self-employed", "Govt_job", "children", "Never_worked"</li>
+  <li><b>Residence_type:</b> "Urban", "Rural"</li>
+  <li><b>smoking_status:</b> "formerly smoked", "never smoked", "smokes", "Unknown"</li>
+</ul>
 
 <br>
 
-<h2>Evidencia</h2>
+<h2>🧪 Evidencia</h2>
 
 <p><b>1. DAG ejecutado en Airflow</b></p>
 <img src="docs/airflow_dag.png" width="700"/>
@@ -218,7 +223,7 @@ smoking_status: formerly smoked, never smoked, smokes, Unknown
 
 <br>
 
-<h2>Detener servicios</h2>
+<h2>🛑 Detener servicios</h2>
 
 <pre>
 docker compose --profile all down
