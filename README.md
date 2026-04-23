@@ -80,7 +80,7 @@ echo "AIRFLOW_UID=$(id -u)" >> .env
 <p><b>1. Clonar el repositorio</b></p>
 
 <pre>
-git clone &lt;url-del-repo&gt;
+git clone &lt;https://github.com/maurovirgilioblanc-cmd/TP_MLOP&gt;
 cd ceia-mlops
 </pre>
 
