@@ -10,7 +10,6 @@ mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
 _model = None
 
-
 def load_model():
     """Carga la version mas reciente del modelo desde MLflow al iniciar la API."""
     global _model

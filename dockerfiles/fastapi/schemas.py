@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class PacienteInput(BaseModel):
     """Datos clinicos del paciente para la prediccion de ACV."""
     age: float
